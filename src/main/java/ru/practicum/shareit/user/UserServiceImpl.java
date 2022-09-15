@@ -6,28 +6,31 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.exception.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
     private final UniqueEmailsStorage uniqueEmailsStorage;
+    private final UserMapper userMapper;
 
     /**
      * сохранение пользователя
      */
     @Override
-    public User saveUser(UserDto userDto) {
+    public UserDto saveUser(UserDto userDto) {
         uniqueEmailsStorage.checkEmailForUniquenessAndValidity(userDto.getEmail());//проверка email на уникальность и валидность
         User user = UserMapper.toUser(userDto);
-        return userStorage.createUser(user);
+        User savedUser = userStorage.createUser(user);
+        return userMapper.toUserDto(savedUser);
     }
 
     /**
      * изменение пользователя
      */
     @Override
-    public User updateUser(long userId, UserDto userDto) {
+    public UserDto updateUser(long userId, UserDto userDto) {
         final User userInStorage = userStorage.get(userId);
         if (userDto.getName() != null) {
             userInStorage.setName(userDto.getName());
@@ -38,27 +41,30 @@ public class UserServiceImpl implements UserService {
             userInStorage.setEmail(userDto.getEmail());
         }
         userStorage.update(userInStorage);
-        return userInStorage;
+        return userMapper.toUserDto(userInStorage);
     }
 
     /**
      * получение пользователя по id
      */
     @Override
-    public User get(long userId) {
+    public UserDto get(long userId) {
         final User user = userStorage.get(userId);
         if (user == null) {
             throw new NotFoundException("User with id=" + userId + "not found");
         }
-        return user;
+        return userMapper.toUserDto(user);
     }
 
     /**
      * получение списка всех пользователей
      */
     @Override
-    public List<User> findAllUsers() {
-        return userStorage.findAllUsers();
+    public List<UserDto> findAllUsers() {
+        List<User> allUsers = userStorage.findAllUsers();
+        return allUsers.stream()
+                .map(userMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     /**

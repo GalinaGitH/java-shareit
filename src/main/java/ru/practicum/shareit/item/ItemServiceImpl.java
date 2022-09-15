@@ -19,19 +19,20 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
+    private final ItemMapper itemMapper;
 
     /**
      * сохранение вещи
      */
     @Override
-    public Item saveItem(long userId, ItemDto itemDto) {
+    public ItemDto saveItem(long userId, ItemDto itemDto) {
         User owner = userStorage.get(userId);
         if (owner == null) {
             throw new NotFoundException("Owner with id=" + userId + "not found");
         }
         Item item = ItemMapper.toItem(itemDto, owner);
         itemStorage.createItem(item);
-        return item;
+        return itemMapper.toItemDto(item);
     }
 
     /**
@@ -39,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
      * Редактировать вещь может только её владелец.
      */
     @Override
-    public Item updateItem(long userId, ItemDto itemDto) {
+    public ItemDto updateItem(long userId, ItemDto itemDto) {
         final Item itemInStorage = itemStorage.get(itemDto.getId());
         if (itemInStorage == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -56,21 +57,23 @@ public class ItemServiceImpl implements ItemService {
                 itemInStorage.setAvailable(itemDto.getAvailable());
             }
             itemStorage.update(itemInStorage);
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
-        return itemInStorage;
+        return itemMapper.toItemDto(itemInStorage);
     }
 
     /**
      * Просмотр информации о конкретной вещи по id
      */
     @Override
-    public Item get(long itemId) {
+    public ItemDto get(long itemId) {
         final Item item = itemStorage.get(itemId);
         if (item == null) {
             throw new NotFoundException("Item with id=" + itemId + "not found");
         }
-        return item;
+        return itemMapper.toItemDto(item);
     }
 
     /**
@@ -78,11 +81,12 @@ public class ItemServiceImpl implements ItemService {
      * с указанием названия и описания для каждой
      */
     @Override
-    public List<Item> getListOfItems(long userId) {
+    public List<ItemDto> getListOfItems(long userId) {
         User owner = userStorage.get(userId);
-        return itemStorage.findAllItems().stream()
+        List<Item> items = itemStorage.findAllItems().stream()
                 .filter(x -> x.getOwner() == owner)
                 .collect(Collectors.toList());
+        return itemMapper.toItemDtoList(items);
     }
 
     /**
@@ -91,13 +95,14 @@ public class ItemServiceImpl implements ItemService {
      * поиск возвращает только доступные для аренды вещи.
      */
     @Override
-    public List<Item> searchItemsByText(String text) {
+    public List<ItemDto> searchItemsByText(String text) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemStorage.findAllItems().stream()
+        List<Item> searchItems = itemStorage.findAllItems().stream()
                 .filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .filter(Item::getAvailable)
                 .collect(Collectors.toList());
+        return itemMapper.toItemDtoList(searchItems);
     }
 }

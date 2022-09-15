@@ -8,11 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Validated
 @RequiredArgsConstructor
 @RestController
@@ -20,35 +16,32 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @GetMapping
     public List<UserDto> findAllUsers() {
         log.debug("Total number of users: {}", userService.findAllUsers().size());
-        return userService.findAllUsers().stream()
-                .map(userMapper::toUserDto)
-                .collect(Collectors.toList());
+        return userService.findAllUsers();
     }
 
     @GetMapping("/{userId}")
     public UserDto getUser(@PathVariable long userId) {
         log.info("Get user by id={}", userId);
-        User user = userService.get(userId);
-        return userMapper.toUserDto(user);
+        UserDto userDto = userService.get(userId);
+        return userDto;
     }
 
     @PostMapping
     public UserDto createUser(@Validated({Create.class}) @RequestBody UserDto userDto) {
-        User user = userService.saveUser(userDto);
+        UserDto userDtoSaved = userService.saveUser(userDto);
         log.debug("Number of added users: {}", 1);
-        return userMapper.toUserDto(user);
+        return userDtoSaved;
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@Valid @PathVariable("userId") long userId, @RequestBody UserDto userDto) {
-        User user = userService.updateUser(userId, userDto);
+        UserDto userDtoUpdated = userService.updateUser(userId, userDto);
         log.debug("User updated");
-        return userMapper.toUserDto(user);
+        return userDtoUpdated;
     }
 
     @DeleteMapping("/{id}")

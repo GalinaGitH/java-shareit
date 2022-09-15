@@ -7,9 +7,6 @@ import ru.practicum.shareit.user.User;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Getter
 @Setter
 @NoArgsConstructor
