@@ -11,6 +11,8 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.exception.NotFoundException;
 
+import java.util.Objects;
+
 @Service
 @AllArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -28,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
         final User author = userRepository.findById(userId)
                 .orElseThrow(NotFoundException::new);
         if (!bookingService.getBookingOfUser(userId, BookingState.PAST).stream()
-                .anyMatch(b -> b.getItem().getId() == itemInStorage.getId())) {
+                .anyMatch(b -> Objects.equals(b.getItem().getId(), itemInStorage.getId()))) {
             throw new IllegalArgumentException("You can leave a comment only after booking a thing");
         }
 
