@@ -7,18 +7,22 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.shareit.booking.exception.ItemIsNotAvailableException;
 import ru.practicum.shareit.user.exception.AlreadyExistException;
 import ru.practicum.shareit.user.exception.NotFoundException;
 import ru.practicum.shareit.user.exception.ValidationEmailException;
 
+import javax.validation.ConstraintViolationException;
+import javax.validation.UnexpectedTypeException;
 import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
 public class ErrorHandler {
-    @ExceptionHandler
+    @ExceptionHandler({NullPointerException.class,
+            NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleNotFoundException(final NotFoundException e) {
+    public Map<String, String> handleNotFoundException(Exception e) {
         log.info("Error 404 {}", e.getMessage());
         return Map.of("Error 404", e.getMessage());
     }
@@ -31,12 +35,16 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({MissingRequestHeaderException.class,
+            ConstraintViolationException.class,
+            UnexpectedTypeException.class,
             MethodArgumentNotValidException.class,
-            ValidationEmailException.class})
+            ValidationEmailException.class,
+            ItemIsNotAvailableException.class,
+            IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationException(Exception e) {
-        log.info("Error 400 {}", e.getMessage());
-        return Map.of("Error 400", e.getMessage());
+        log.info(e.getMessage());
+        return Map.of("error", e.getMessage());
     }
 
 }

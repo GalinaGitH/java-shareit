@@ -1,11 +1,10 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.item.dto;
 
 import lombok.*;
 import ru.practicum.shareit.user.Create;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,12 +12,13 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "id")
-public class UserDto {
+public class CommentDto {
 
     private Long id;
     @NotBlank(groups = {Create.class})
-    private String name;
-    @NotBlank(groups = {Create.class})
-    @Email
-    private String email;
+    private String text;
+    private Long itemId;
+    private String authorName;
+    private LocalDateTime dateOfCreation;
+
 }
