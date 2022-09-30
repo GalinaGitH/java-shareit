@@ -23,7 +23,6 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    @Transactional
     public CommentDto saveComment(CommentDto commentDto, long userId) {
         final Item itemInStorage = itemRepository.findById(commentDto.getItemId())
                 .orElseThrow(NotFoundException::new);
