@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.Update;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "id")
-public class ItemDto {
+public class ItemDtoWithBookings {
     @NotNull(groups = {Update.class})
     private long id;
     @NotBlank(groups = {Create.class})
@@ -23,4 +24,18 @@ public class ItemDto {
     @NotNull(groups = {Create.class})
     private Boolean available;
     private Long requestId;
+    private List<CommentDto> comments;
+    private Booking lastBooking;
+    private Booking nextBooking;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode(of = "id")
+    public static class Booking {
+        Long id;
+        Long bookerId;
+    }
 }
+

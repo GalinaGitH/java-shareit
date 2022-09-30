@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.user.Create;
 import ru.practicum.shareit.user.Update;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @Slf4j
 public class ItemController {
     private final ItemService itemService;
+    private final CommentService commentService;
 
     @PostMapping
     public ItemDto createItem(@RequestHeader("X-Sharer-User-Id") long userId, @Validated({Create.class}) @RequestBody ItemDto itemDto) {
@@ -35,15 +38,15 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable long itemId) {
+    public ItemDtoWithBookings getItem(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId) {
         log.info("Get item by id={}", itemId);
-        ItemDto itemDto = itemService.get(itemId);
+        ItemDtoWithBookings itemDto = itemService.get(itemId, userId);
         return itemDto;
     }
 
     @GetMapping
-    public List<ItemDto> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") long userId) {
-        List<ItemDto> items = itemService.getListOfItems(userId);
+    public List<ItemDtoWithBookings> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") long userId) {
+        List<ItemDtoWithBookings> items = itemService.getListOfItems(userId);
         log.info("Get List of items with userid={}", userId);
         return items;
     }
@@ -53,5 +56,13 @@ public class ItemController {
         List<ItemDto> items = itemService.searchItemsByText(text);
         log.info("Get List of items by search={}", text);
         return items;
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto saveComment(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long itemId, @Validated({Create.class}) @RequestBody CommentDto commentDto) {
+        commentDto.setItemId(itemId);
+        CommentDto commentDtoSaved = commentService.saveComment(commentDto, userId);
+        log.debug("Added a comment to the item with id =: {}", itemId);
+        return commentDtoSaved;
     }
 }
