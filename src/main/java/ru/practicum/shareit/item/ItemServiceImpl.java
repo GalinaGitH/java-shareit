@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
@@ -31,7 +30,6 @@ public class ItemServiceImpl implements ItemService {
      * сохранение вещи
      */
     @Override
-    @Transactional
     public ItemDto saveItem(long userId, ItemDto itemDto) {
         User owner = userRepository.findById(userId).orElseThrow(NotFoundException::new);
         Item item = ItemMapper.toItem(itemDto, owner);
@@ -44,7 +42,6 @@ public class ItemServiceImpl implements ItemService {
      * Редактировать вещь может только её владелец.
      */
     @Override
-    @Transactional
     public ItemDto updateItem(long userId, ItemDto itemDto) {
         final Item itemInStorage = itemRepository.findById(itemDto.getId()).orElseThrow(NotFoundException::new);
         User owner = userRepository.findById(userId).orElseThrow();
