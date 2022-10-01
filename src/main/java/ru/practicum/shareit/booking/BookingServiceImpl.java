@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 import ru.practicum.shareit.booking.exception.BadRequestException;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
@@ -30,6 +32,7 @@ public class BookingServiceImpl implements BookingService {
      * Добавление бронирования/аренда
      * После создания запрос находится в статусе WAITING — «ожидает подтверждения»
      */
+    @Transactional
     @Override
     public BookingDto createBooking(long userId, NewBookingDto newBookingDto) {
         final Item itemInStorage = itemRepository.findById(newBookingDto.getItemId())
@@ -52,6 +55,7 @@ public class BookingServiceImpl implements BookingService {
      * Подтверждение или отклонение запроса на бронирование.
      * Может быть выполнено только владельцем вещи
      */
+    @Transactional
     @Override
     public BookingDto changeBooking(long userId, Long bookingId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)

@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -22,7 +23,7 @@ public class CommentServiceImpl implements CommentService {
     private final BookingService bookingService;
     private final CommentMapper commentMapper;
 
-
+    @Transactional
     @Override
     public CommentDto saveComment(CommentDto commentDto, long userId) {
         final Item itemInStorage = itemRepository.findById(commentDto.getItemId())
