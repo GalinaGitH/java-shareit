@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 import ru.practicum.shareit.user.User;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
@@ -33,6 +35,8 @@ public class BookingControllerTest {
 
     @MockBean
     BookingService bookingService;
+    @Autowired
+    private ObjectMapper mapper;
     private BookingDto bookingDto;
     private NewBookingDto newBookingDto;
     String jsonContent;
@@ -62,6 +66,37 @@ public class BookingControllerTest {
         verify(bookingService, times(1))
                 .createBooking(1L, newBookingDto);
     }
+
+    @Test
+    void bookItemNullTest() throws Exception {
+        when(bookingService.createBooking(anyLong(), any()))
+                .thenReturn(bookingDto);
+        bookingDto.setItem(null);
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(jsonContent)
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void bookItemWithStartNullTest() throws Exception {
+        when(bookingService.createBooking(anyLong(), any()))
+                .thenReturn(bookingDto);
+        bookingDto.setStart(null);
+        mockMvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .content(jsonContent)
+                        .content(mapper.writeValueAsString(bookingDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 
     @Test
     void changeOfBookingTest() throws Exception {
@@ -106,6 +141,38 @@ public class BookingControllerTest {
 
         verify(bookingService, times(1))
                 .getBookingOfUser(1L, BookingState.ALL, 0, 10);
+    }
+
+    @Test
+    void getBookingsWithBadRequestSizeErrorTest() throws Exception {
+        when(bookingService.getBookingOfUser(anyLong(), any(), anyInt(), anyInt()))
+                .thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", "1")
+                        .param("state", "ALL")
+                        .param("from", "1")
+                        .param("size", "-1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getBookingsWithFromErrorTest() throws Exception {
+        when(bookingService.getBookingOfUser(anyLong(), any(), anyInt(), anyInt()))
+                .thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", "1")
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

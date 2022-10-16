@@ -75,8 +75,11 @@ public class CommentServiceImplTest {
                 .thenReturn(comment);
 
         commentService.saveComment(commentDto, 1L);
+        when(commentMapper.toCommentDto(any()))
+                .thenReturn(commentDto);
 
         verify(commentRepository, times(1)).save(comment);
+        verify(commentMapper, times(1)).toCommentDto(comment);
     }
 
     @Test

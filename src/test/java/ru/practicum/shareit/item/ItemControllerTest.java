@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
+import ru.practicum.shareit.user.User;
 
 import java.util.Collections;
 
@@ -22,7 +23,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
@@ -37,9 +37,11 @@ public class ItemControllerTest {
     CommentService commentService;
     private final ObjectMapper mapper = new ObjectMapper();
     ItemDto itemDto;
+    User user;
 
     @BeforeEach
     void beforeEach() {
+        user = new User(1L, "user 1", "user1@email");
         itemDto = new ItemDto(1L, "дрель", "дрель ударная Макита", true, 1L);
     }
 

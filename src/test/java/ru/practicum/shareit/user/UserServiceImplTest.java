@@ -48,10 +48,29 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUserWithNotFoundUserExTest() {
+        UserDto dto = new UserDto(1L, "user 1", "user1@email");
+        when(userRepository.findById(anyLong()))
+                .thenThrow(new NotFoundException());
+
+        final var ex = assertThrows(RuntimeException.class, () -> userService.updateUser(1L, dto));
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
     void getUserDtoTest() {
-        when(userRepository.findById(1L))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
         userService.get(1L);
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void getWithNotFoundUserExTest() {
+        when(userRepository.findById(anyLong()))
+                .thenThrow(new NotFoundException());
+
+        final var ex = assertThrows(RuntimeException.class, () -> userService.get(1L));
         verify(userRepository, times(1)).findById(1L);
     }
 
@@ -73,7 +92,7 @@ class UserServiceImplTest {
 
     @Test
     void updateAndDeleteUserByIdTest() {
-        when(userRepository.findById(1L))
+        when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
         UserDto dto = new UserDto(1L, "user update", "user1@email");
         userService.updateUser(1L, dto);
@@ -83,10 +102,10 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUserWithExceptionTest() {
-        when(userRepository.findById(1L))
+    void deleteUserWithExceptionTest() {
+        when(userRepository.findById(anyLong()))
                 .thenThrow(new NotFoundException());
-        final var ex = assertThrows(RuntimeException.class, () -> userService.get(1L));
+        final var ex = assertThrows(RuntimeException.class, () -> userService.deleteUserById(1L));
         verify(userRepository, times(1)).findById(1L);
     }
 }
