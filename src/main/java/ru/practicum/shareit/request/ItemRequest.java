@@ -1,11 +1,16 @@
 package ru.practicum.shareit.request;
 
 import lombok.*;
+
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,12 +18,24 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "id")
+@Entity
+@Table(name = "item_requests")
 public class ItemRequest {
 
-    @NotNull
-    private long id;
-    @Size(max = 200, message = "максимальная длина описания — 200 символов")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String description;//текст запроса, содержащий описание требуемой вещи;
+
+    @JoinColumn(name = "requestor_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User requestor;//пользователь, создавший запрос;
+
+    @Column(name = "created_at")
     private LocalDateTime created;//дата и время создания запроса.
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "requestId")
+    private final List<Item> items = new ArrayList<>();
+
 }

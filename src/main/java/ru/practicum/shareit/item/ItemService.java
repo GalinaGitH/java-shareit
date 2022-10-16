@@ -12,7 +12,7 @@ public interface ItemService {
 
     ItemDtoWithBookings get(long itemId, long userId);
 
-    List<ItemDtoWithBookings> getListOfItems(long userId);
+    List<ItemDtoWithBookings> getListOfItems(long userId, int from,int size);
 
-    List<ItemDto> searchItemsByText(String text);
+    List<ItemDto> searchItemsByText(String text,int from,int size);
 }

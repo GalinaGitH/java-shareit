@@ -10,6 +10,8 @@ import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.user.Create;
 import ru.practicum.shareit.user.Update;
 
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Validated
@@ -45,15 +47,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDtoWithBookings> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") long userId) {
-        List<ItemDtoWithBookings> items = itemService.getListOfItems(userId);
+    public List<ItemDtoWithBookings> getItemsOfUser(@RequestHeader("X-Sharer-User-Id") long userId,
+                                                    @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
+                                                    @Positive @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<ItemDtoWithBookings> items = itemService.getListOfItems(userId,from,size);
         log.info("Get List of items with userid={}", userId);
         return items;
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam("text") String text) {
-        List<ItemDto> items = itemService.searchItemsByText(text);
+    public List<ItemDto> searchItems(@RequestParam("text") String text,
+                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
+                                     @Positive @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<ItemDto> items = itemService.searchItemsByText(text,from,size);
         log.info("Get List of items by search={}", text);
         return items;
     }

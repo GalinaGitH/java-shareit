@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -11,37 +12,37 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      * Получение списка всех бронирований текущего пользователя.
      */
     @Query("SELECT b FROM Booking b WHERE b.booker.id =?1 ORDER BY b.start DESC")
-    List<Booking> findAllBookingsOfUser(Long userId);
+    List<Booking> findAllBookingsOfUser(Long userId, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.start<?2 AND b.end>?3 ORDER BY b.start DESC")
-    List<Booking> findBookingsOfUserBetween(Long userId, LocalDateTime start, LocalDateTime end);
+    List<Booking> findBookingsOfUserBetween(Long userId, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.end<?2  ORDER BY b.start DESC")
-    List<Booking> findBookingsOfUserPast(Long userId, LocalDateTime end);
+    List<Booking> findBookingsOfUserPast(Long userId, LocalDateTime end, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.start>?2  ORDER BY b.start DESC")
-    List<Booking> findBookingsOfUserFuture(Long userId, LocalDateTime start);
+    List<Booking> findBookingsOfUserFuture(Long userId, LocalDateTime start, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.status=?2 ORDER BY b.start DESC")
-    List<Booking> findAllBookingsOfUserWithStatus(Long userId, BookingStatus status);
+    List<Booking> findAllBookingsOfUserWithStatus(Long userId, BookingStatus status, Pageable pageable);
 
     /**
      * Получение списка всех бронирований для владельца вещи
      */
     @Query("SELECT b FROM Booking b WHERE b.item.id IN ?1 ORDER BY b.start DESC")
-    List<Booking> findAllBookingsOfItemsUser(List<Long> itemIds);
+    List<Booking> findAllBookingsOfItemsUser(List<Long> itemIds, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.item.id IN ?1 AND b.start<?2 AND b.end>?3 ORDER BY b.start DESC")
-    List<Booking> findBookingsOfUserItemsBetween(List<Long> itemIds, LocalDateTime start, LocalDateTime end);
+    List<Booking> findBookingsOfUserItemsBetween(List<Long> itemIds, LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.item.id IN ?1 AND b.end<?2  ORDER BY b.start DESC")
-    List<Booking> findBookingsOfUserItemsInPast(List<Long> itemIds, LocalDateTime end);
+    List<Booking> findBookingsOfUserItemsInPast(List<Long> itemIds, LocalDateTime end, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.item.id IN ?1 AND b.start>?2  ORDER BY b.start DESC")
-    List<Booking> findBookingsOfUserItemsInFuture(List<Long> itemIds, LocalDateTime start);
+    List<Booking> findBookingsOfUserItemsInFuture(List<Long> itemIds, LocalDateTime start, Pageable pageable);
 
     @Query("SELECT b FROM Booking b WHERE b.item.id IN ?1 AND b.status=?2 ORDER BY b.start DESC")
-    List<Booking> findAllBookingsOfUserItemsWithStatus(List<Long> itemIds, BookingStatus status);
+    List<Booking> findAllBookingsOfUserItemsWithStatus(List<Long> itemIds, BookingStatus status, Pageable pageable);
 
     /**
      * получение двух последних бронирований
