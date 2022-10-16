@@ -26,7 +26,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.status=?2 ORDER BY b.start DESC")
     List<Booking> findAllBookingsOfUserWithStatus(Long userId, BookingStatus status, Pageable pageable);
-    
+
     /**
      * Получение списка всех бронирований для владельца вещи
      */
