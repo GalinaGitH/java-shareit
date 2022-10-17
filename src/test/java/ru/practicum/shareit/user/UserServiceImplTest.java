@@ -58,6 +58,35 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateUserWitnNullNameTest() {
+        UserDto dto = new UserDto(1L, "null", "user1@email");
+        when(userRepository.save(user))
+                .thenReturn(user);
+        when(userMapper.toUserDto(user))
+                .thenReturn(dto);
+        UserDto userDto = userService.saveUser(dto);
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        userService.updateUser(1L, userDto);
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void updateUserWithNullMailTest() {
+        UserDto dto = new UserDto(1L, "user", "null");
+        when(userRepository.save(user))
+                .thenReturn(user);
+        when(userMapper.toUserDto(user))
+                .thenReturn(dto);
+        UserDto userDto = userService.saveUser(dto);
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        userService.updateUser(1L, userDto);
+        verify(userRepository, times(1)).findById(1L);
+    }
+
+
+    @Test
     void getUserDtoTest() {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
