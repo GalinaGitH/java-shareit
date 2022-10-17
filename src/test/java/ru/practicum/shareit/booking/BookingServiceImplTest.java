@@ -98,10 +98,8 @@ public class BookingServiceImplTest {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
 
-        when(itemRepository.findById(anyLong()))
-                .thenThrow(new NotFoundException());
-        final var ex = assertThrows(RuntimeException.class, () -> bookingService.createBooking(user.getId(), newBookingDto));
-
+        final var ex = assertThrows(NotFoundException.class, () -> bookingService.createBooking(user.getId(), newBookingDto));
+        assertEquals(ex.getClass(), NotFoundException.class);
         verify(itemRepository, times(1)).findById(1L);
         verify(bookingRepository, times(0)).save(booking);
     }
@@ -136,9 +134,9 @@ public class BookingServiceImplTest {
         when(bookingRepository.findById(anyLong()))
                 .thenReturn(Optional.of(booking));
         when(userRepository.findById(anyLong()))
-                .thenThrow(new NotOwnerException("the request can only change by the owner"));
+                .thenReturn(Optional.of(userNotOwner));
 
-        final var ex = assertThrows(RuntimeException.class, () -> bookingService.changeBooking(userNotOwner.getId(), booking.getId(), false));
+        final var ex = assertThrows(NotOwnerException.class, () -> bookingService.changeBooking(userNotOwner.getId(), booking.getId(), false));
         assertEquals("the request can only change by the owner", ex.getMessage());
 
         verify(bookingRepository, times(0)).save(booking);
@@ -167,10 +165,12 @@ public class BookingServiceImplTest {
 
     @Test
     void changeAlreadyApprovedBookingWithExceptionTest() {
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
         bookingApproved = new Booking(1L, LocalDateTime.of(2021, 11, 3, 9, 55), LocalDateTime.of(2022, 11, 8, 19, 55), item, user, BookingStatus.APPROVED);
         when(bookingRepository.findById(anyLong()))
-                .thenThrow(new BadRequestException("Status already APPROVED"));
-        final var ex = assertThrows(RuntimeException.class, () -> bookingService.changeBooking(userNotOwner.getId(), bookingApproved.getId(), true));
+                .thenReturn(Optional.of(bookingApproved));
+        final var ex = assertThrows(BadRequestException.class, () -> bookingService.changeBooking(user.getId(), bookingApproved.getId(), true));
         assertEquals("Status already APPROVED", ex.getMessage());
 
         verify(bookingRepository, times(0)).save(booking);
@@ -202,9 +202,9 @@ public class BookingServiceImplTest {
         when(bookingRepository.findById(anyLong()))
                 .thenReturn(Optional.of(booking));
         when(userRepository.findById(anyLong()))
-                .thenThrow(new NotOwnerException("the request can only be made by the owner or booker"));
+                .thenReturn(Optional.of(userNotOwner));
 
-        final var ex = assertThrows(RuntimeException.class, () -> bookingService.getBooking(2L, booking.getId()));
+        final var ex = assertThrows(NotOwnerException.class, () -> bookingService.getBooking(2L, booking.getId()));
         assertEquals("the request can only be made by the owner or booker", ex.getMessage());
         verify(userRepository, times(1)).findById(2L);
     }
@@ -426,4 +426,11 @@ public class BookingServiceImplTest {
         verify(userRepository, times(1)).findById(1L);
     }
 
+    @Test
+    void getBookingOfOwnerWithStatusNULLTest() {
+        when(userRepository.findById(anyLong()))
+                .thenReturn(Optional.of(user));
+        final var ex = assertThrows(IllegalArgumentException.class, () -> bookingService.getBookingOfOwner(user.getId(), BookingState.valueOf("null"), 0, 10));
+        assertEquals(ex.getClass(), IllegalArgumentException.class);
+    }
 }

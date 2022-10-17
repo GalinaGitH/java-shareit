@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
 
@@ -58,33 +57,31 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUserWitnNullNameTest() {
-        UserDto dto = new UserDto(1L, "null", "user1@email");
-        when(userRepository.save(user))
-                .thenReturn(user);
-        when(userMapper.toUserDto(user))
-                .thenReturn(dto);
-        UserDto userDto = userService.saveUser(dto);
+    void updateUserWithNullNameAndEmailTest() {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        userService.updateUser(1L, userDto);
-        verify(userRepository, times(1)).findById(1L);
+        UserDto dto = new UserDto(1L, null, null);
+        when(userMapper.toUserDto(user))
+                .thenReturn(new UserDto(1L, user.getName(), user.getEmail()));
+        when(userRepository.save(user))
+                .thenReturn(user);
+        UserDto dtoNew = userService.updateUser(1L, dto);
+        assertNotNull(dtoNew);
+        assertEquals(dtoNew.getName(), user.getName());
+        assertEquals(dtoNew.getEmail(), user.getEmail());
     }
 
     @Test
-    void updateUserWithNullMailTest() {
-        UserDto dto = new UserDto(1L, "user", "null");
-        when(userRepository.save(user))
-                .thenReturn(user);
-        when(userMapper.toUserDto(user))
-                .thenReturn(dto);
-        UserDto userDto = userService.saveUser(dto);
+    void updateUserTest() {
         when(userRepository.findById(anyLong()))
                 .thenReturn(Optional.of(user));
-        userService.updateUser(1L, userDto);
-        verify(userRepository, times(1)).findById(1L);
+        UserDto dto = new UserDto(1L, "user", "user1@email");
+        when(userMapper.toUserDto(user))
+                .thenReturn(dto);
+        when(userRepository.save(user))
+                .thenReturn(user);
+        assertEquals(dto, userService.updateUser(1L, dto));
     }
-
 
     @Test
     void getUserDtoTest() {
