@@ -18,7 +18,7 @@ import java.util.List;
 @SpringBootTest
 public class CommentMapperTest {
     @Autowired
-    CommentMapper commentMapper;
+    private CommentMapper commentMapper;
 
     private Comment comment;
     private User user;

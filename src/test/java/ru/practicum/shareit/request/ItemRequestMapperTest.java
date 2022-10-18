@@ -16,7 +16,7 @@ import java.util.List;
 @SpringBootTest
 public class ItemRequestMapperTest {
     @Autowired
-    ItemRequestMapper itemRequestMapper;
+    private ItemRequestMapper itemRequestMapper;
 
     private ItemRequest itemRequest;
     private NewItemRequestDto newItemRequestDto;

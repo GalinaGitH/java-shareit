@@ -17,7 +17,7 @@ import java.util.List;
 @SpringBootTest
 public class BookingMapperTest {
     @Autowired
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
 
     private NewBookingDto newBookingDto;
     private Booking booking;

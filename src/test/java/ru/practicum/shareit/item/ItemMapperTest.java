@@ -15,7 +15,7 @@ import java.util.List;
 @SpringBootTest
 public class ItemMapperTest {
     @Autowired
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
     private User user;
     private Item item;
 

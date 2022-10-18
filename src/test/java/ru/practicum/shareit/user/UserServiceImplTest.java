@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class UserServiceImplTest {
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
     @Mock
     private UserRepository userRepository;
     @Mock

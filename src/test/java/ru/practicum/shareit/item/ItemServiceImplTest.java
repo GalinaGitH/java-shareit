@@ -30,16 +30,16 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class ItemServiceImplTest {
 
-    ItemServiceImpl itemService;
+    private ItemServiceImpl itemService;
 
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    ItemMapper itemMapper;
+    private ItemMapper itemMapper;
 
     private Item item;
     private User user;

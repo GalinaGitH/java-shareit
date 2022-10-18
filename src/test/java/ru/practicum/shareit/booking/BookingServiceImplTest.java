@@ -35,15 +35,15 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class BookingServiceImplTest {
 
-    BookingServiceImpl bookingService;
+    private BookingServiceImpl bookingService;
     @Mock
-    BookingRepository bookingRepository;
+    private BookingRepository bookingRepository;
     @Mock
-    ItemRepository itemRepository;
+    private ItemRepository itemRepository;
     @Mock
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Mock
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
     private NewBookingDto newBookingDto;
     private Booking booking;
     private Item item;

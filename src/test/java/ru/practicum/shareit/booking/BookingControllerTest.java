@@ -31,15 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BookingControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @Autowired
     private ObjectMapper mapper;
     private BookingDto bookingDto;
     private NewBookingDto newBookingDto;
-    String jsonContent;
+    private String jsonContent;
     private User user;
 
     @BeforeEach
