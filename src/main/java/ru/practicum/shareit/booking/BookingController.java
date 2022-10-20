@@ -8,6 +8,8 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 
@@ -44,24 +46,28 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getBookingOfUser(@RequestHeader("X-Sharer-User-Id") long userId,
-                                             @RequestParam(name = "state", defaultValue = "ALL") String stateParam) {
+                                             @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
+                                             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
+                                             @Positive @RequestParam(name = "size", defaultValue = "10") int size) {
         BookingState state = BookingState.from(stateParam);
         if (state == null) {
             throw new IllegalArgumentException("Unknown state: " + stateParam);
         }
-        List<BookingDto> bookings = bookingService.getBookingOfUser(userId, state);
+        List<BookingDto> bookings = bookingService.getBookingOfUser(userId, state, from, size);
         log.info("Get List of bookings of user");
         return bookings;
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getBookingOfOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                              @RequestParam(name = "state", defaultValue = "ALL") String stateParam) {
+                                              @RequestParam(name = "state", defaultValue = "ALL") String stateParam,
+                                              @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
+                                              @Positive @RequestParam(name = "size", defaultValue = "10") int size) {
         BookingState state = BookingState.from(stateParam);
         if (state == null) {
             throw new IllegalArgumentException("Unknown state: " + stateParam);
         }
-        List<BookingDto> bookings = bookingService.getBookingOfOwner(userId, state);
+        List<BookingDto> bookings = bookingService.getBookingOfOwner(userId, state, from, size);
         log.info("Get List of bookings of user");
         return bookings;
     }

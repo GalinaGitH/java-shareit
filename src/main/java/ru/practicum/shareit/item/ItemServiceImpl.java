@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,9 +85,10 @@ public class ItemServiceImpl implements ItemService {
      * с указанием названия и описания для каждой
      */
     @Override
-    public List<ItemDtoWithBookings> getListOfItems(long userId) {
+    public List<ItemDtoWithBookings> getListOfItems(long userId, int from, int size) {
         User owner = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-        List<Item> items = itemRepository.findAll().stream()
+        int page = from / size;
+        List<Item> items = itemRepository.findAll(PageRequest.of(page, size)).stream()
                 .filter(x -> x.getOwner() == owner)
                 .collect(Collectors.toList());
         List<ItemDtoWithBookings> itemsFinal = new ArrayList<>();
@@ -103,11 +105,12 @@ public class ItemServiceImpl implements ItemService {
      * поиск возвращает только доступные для аренды вещи.
      */
     @Override
-    public List<ItemDto> searchItemsByText(String text) {
+    public List<ItemDto> searchItemsByText(String text, int from, int size) {
+        int page = from / size;
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        List<Item> searchItems = itemRepository.findAll().stream()
+        List<Item> searchItems = itemRepository.findAll(PageRequest.of(page, size)).stream()
                 .filter(x -> x.getName().toLowerCase().contains(text.toLowerCase()) || x.getDescription().toLowerCase().contains(text.toLowerCase()))
                 .filter(Item::getAvailable)
                 .collect(Collectors.toList());

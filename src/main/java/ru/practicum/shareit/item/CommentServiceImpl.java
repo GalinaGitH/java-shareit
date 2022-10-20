@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(NotFoundException::new);
         final User author = userRepository.findById(userId)
                 .orElseThrow(NotFoundException::new);
-        if (!bookingService.getBookingOfUser(userId, BookingState.PAST).stream()
+        if (!bookingService.getBookingOfUser(userId, BookingState.PAST, 0, 10).stream()
                 .anyMatch(b -> Objects.equals(b.getItem().getId(), itemInStorage.getId()))) {
             throw new IllegalArgumentException("You can leave a comment only after booking a thing");
         }

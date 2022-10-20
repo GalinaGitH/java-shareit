@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -93,27 +94,27 @@ public class BookingServiceImpl implements BookingService {
      * Сортировка бронирований по дате от более новых к более старым
      */
     @Override
-    public List<BookingDto> getBookingOfUser(long userId, BookingState state) {
+    public List<BookingDto> getBookingOfUser(long userId, BookingState state, int from, int size) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
-
+        int page = from / size;
         switch (state) {
             case ALL:
-                List<Booking> bookings = bookingRepository.findAllBookingsOfUser(user.getId());
+                List<Booking> bookings = bookingRepository.findAllBookingsOfUser(user.getId(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case CURRENT:
-                bookings = bookingRepository.findBookingsOfUserBetween(user.getId(), LocalDateTime.now(), LocalDateTime.now());
+                bookings = bookingRepository.findBookingsOfUserBetween(user.getId(), LocalDateTime.now(), LocalDateTime.now(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case PAST:
-                bookings = bookingRepository.findBookingsOfUserPast(user.getId(), LocalDateTime.now());
+                bookings = bookingRepository.findBookingsOfUserPast(user.getId(), LocalDateTime.now(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case FUTURE:
-                bookings = bookingRepository.findBookingsOfUserFuture(user.getId(), LocalDateTime.now());
+                bookings = bookingRepository.findBookingsOfUserFuture(user.getId(), LocalDateTime.now(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case WAITING:
-                bookings = bookingRepository.findAllBookingsOfUserWithStatus(user.getId(), BookingStatus.WAITING);
+                bookings = bookingRepository.findAllBookingsOfUserWithStatus(user.getId(), BookingStatus.WAITING, PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case REJECTED:
-                bookings = bookingRepository.findAllBookingsOfUserWithStatus(user.getId(), BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllBookingsOfUserWithStatus(user.getId(), BookingStatus.REJECTED, PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
 
             default:
@@ -125,8 +126,9 @@ public class BookingServiceImpl implements BookingService {
      * Получение списка бронирований для всех вещей текущего пользователя-владельца вещи
      */
     @Override
-    public List<BookingDto> getBookingOfOwner(long userId, BookingState state) {
+    public List<BookingDto> getBookingOfOwner(long userId, BookingState state, int from, int size) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundException::new);
+        int page = from / size;
         List<Item> items = itemRepository.findAll().stream()
                 .filter(x -> x.getOwner() == user)
                 .collect(Collectors.toList());
@@ -136,22 +138,22 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case ALL:
-                List<Booking> bookings = bookingRepository.findAllBookingsOfItemsUser(itemIds);
+                List<Booking> bookings = bookingRepository.findAllBookingsOfItemsUser(itemIds, PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case CURRENT:
-                bookings = bookingRepository.findBookingsOfUserItemsBetween(itemIds, LocalDateTime.now(), LocalDateTime.now());
+                bookings = bookingRepository.findBookingsOfUserItemsBetween(itemIds, LocalDateTime.now(), LocalDateTime.now(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case PAST:
-                bookings = bookingRepository.findBookingsOfUserItemsInPast(itemIds, LocalDateTime.now());
+                bookings = bookingRepository.findBookingsOfUserItemsInPast(itemIds, LocalDateTime.now(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case FUTURE:
-                bookings = bookingRepository.findBookingsOfUserItemsInFuture(itemIds, LocalDateTime.now());
+                bookings = bookingRepository.findBookingsOfUserItemsInFuture(itemIds, LocalDateTime.now(), PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case WAITING:
-                bookings = bookingRepository.findAllBookingsOfUserItemsWithStatus(itemIds, BookingStatus.WAITING);
+                bookings = bookingRepository.findAllBookingsOfUserItemsWithStatus(itemIds, BookingStatus.WAITING, PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             case REJECTED:
-                bookings = bookingRepository.findAllBookingsOfUserItemsWithStatus(itemIds, BookingStatus.REJECTED);
+                bookings = bookingRepository.findAllBookingsOfUserItemsWithStatus(itemIds, BookingStatus.REJECTED, PageRequest.of(page, size));
                 return bookingMapper.toBookingDtoList(bookings);
             default:
                 throw new IllegalArgumentException();
