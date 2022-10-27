@@ -1,9 +1,6 @@
 package ru.practicum.shareit.request.dto;
 
 import lombok.*;
-import ru.practicum.shareit.user.Create;
-
-import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
@@ -11,6 +8,5 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @ToString
 public class NewItemRequestDto {
-    @NotBlank(groups = {Create.class})
     private String description;
 }

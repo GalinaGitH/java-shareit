@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.*;
-import ru.practicum.shareit.booking.StartBeforeEnd;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(of = "id")
-@StartBeforeEnd
 public class NewBookingDto {
 
     private LocalDateTime start;

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package test.ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.NewBookingDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
@@ -169,7 +171,7 @@ public class BookingRepositoryTest {
         booking = new Booking(null, LocalDateTime.of(2021, 11, 3, 9, 55), LocalDateTime.of(2021, 11, 8, 19, 55), item, userNotOwner, WAITING);
         em.persist(booking);
 
-        List<Booking> bookingsList = bookingRepository.findLastBookings(userOwner.getId(), item.getId(), LocalDateTime.now(), WAITING);
+        List<Booking> bookingsList = bookingRepository.findLastBookings(userOwner.getId(), item.getId(), LocalDateTime.now());
         then(bookingsList).size().isEqualTo(1);
     }
 
@@ -181,7 +183,7 @@ public class BookingRepositoryTest {
         booking = new Booking(null, LocalDateTime.of(2022, 11, 3, 9, 55), LocalDateTime.of(2022, 11, 8, 19, 55), item, userNotOwner, WAITING);
         em.persist(booking);
 
-        List<Booking> bookingsList = bookingRepository.findFutureBookings(userOwner.getId(), item.getId(), LocalDateTime.now(), WAITING);
+        List<Booking> bookingsList = bookingRepository.findFutureBookings(userOwner.getId(), item.getId(), LocalDateTime.now());
         then(bookingsList).size().isEqualTo(1);
     }
 }

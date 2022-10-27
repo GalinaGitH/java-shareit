@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.booking.exception.ItemIsNotAvailableException;
 import ru.practicum.shareit.user.exception.NotFoundException;
 
-import javax.validation.ConstraintViolationException;
-import javax.validation.UnexpectedTypeException;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -26,8 +24,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler({MissingRequestHeaderException.class,
-            ConstraintViolationException.class,
-            UnexpectedTypeException.class,
             MethodArgumentNotValidException.class,
             ItemIsNotAvailableException.class,
             IllegalArgumentException.class})

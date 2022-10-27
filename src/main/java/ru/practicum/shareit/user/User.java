@@ -3,7 +3,6 @@ package ru.practicum.shareit.user;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 
 @Getter
 @Setter
@@ -23,6 +22,5 @@ public class User {
     @Column(name = "email",
             nullable = false,
             unique = true)
-    @Email
     private String email;
 }

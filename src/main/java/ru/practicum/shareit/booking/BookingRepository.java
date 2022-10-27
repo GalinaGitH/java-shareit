@@ -48,10 +48,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     /**
      * получение двух последних бронирований
      */
-    @Query("SELECT b FROM Booking b WHERE b.item.owner.id =?1 AND b.item.id = ?2 AND b.end < ?3 AND b.status=?4 ORDER BY b.start DESC")
-    List<Booking> findLastBookings(Long userId, Long itemId, LocalDateTime now, BookingStatus status);
+    @Query("SELECT b FROM Booking b WHERE b.item.owner.id =?1 AND b.item.id = ?2 AND b.end < ?3 ORDER BY b.start DESC")
+    List<Booking> findLastBookings(Long userId, Long itemId, LocalDateTime now);
 
-    @Query("SELECT b FROM Booking b WHERE b.item.owner.id =?1 AND b.item.id = ?2 AND b.start > ?3 AND b.status=?4 ORDER BY b.start DESC")
-    List<Booking> findFutureBookings(Long userId, Long itemId, LocalDateTime now, BookingStatus status);
+    @Query("SELECT b FROM Booking b WHERE b.item.owner.id =?1 AND b.item.id = ?2 AND b.start > ?3  ORDER BY b.start DESC")
+    List<Booking> findFutureBookings(Long userId, Long itemId, LocalDateTime now);
 }
 

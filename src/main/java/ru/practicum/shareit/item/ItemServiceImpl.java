@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
-import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.model.Item;
@@ -90,6 +89,7 @@ public class ItemServiceImpl implements ItemService {
         int page = from / size;
         List<Item> items = itemRepository.findAll(PageRequest.of(page, size)).stream()
                 .filter(x -> x.getOwner() == owner)
+                .sorted(Comparator.comparing(Item::getId))
                 .collect(Collectors.toList());
         List<ItemDtoWithBookings> itemsFinal = new ArrayList<>();
         for (Item item : items) {
@@ -118,8 +118,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private ItemDtoWithBookings getItemWithBooking(Item item, long ownerId, long itemId) {
-        List<Booking> lastBookings = bookingRepository.findLastBookings(ownerId, itemId, LocalDateTime.now(), BookingStatus.APPROVED);
-        List<Booking> futureBookings = bookingRepository.findFutureBookings(ownerId, itemId, LocalDateTime.now(), BookingStatus.APPROVED);
+        List<Booking> lastBookings = bookingRepository.findLastBookings(ownerId, itemId, LocalDateTime.now());
+        List<Booking> futureBookings = bookingRepository.findFutureBookings(ownerId, itemId, LocalDateTime.now());
 
         Booking last = lastBookings.stream()
                 .max(Comparator.comparing(Booking::getEnd))
